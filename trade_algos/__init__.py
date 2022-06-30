@@ -1,7 +1,7 @@
 from typing import Union
 
 import arrow
-from alpaca_trade_api.rest import REST, APIError, TimeFrame
+from alpaca_trade_api.rest import REST, APIError, TimeFrame, TimeFrameUnit
 
 
 class BaseAlgorithm:
@@ -65,9 +65,7 @@ class BaseAlgorithm:
         return float(q.ap)
 
     def get_yesterday_price(self, symbol: str):
-        barset = self.api.get_bars(
-            symbol, TimeFrame.Day, start=arrow.now().shift(days=-1).isoformat(), limit=2)
-        return float(barset[-1].c)
+        return self.api.get_bars(symbol, TimeFrame(23, TimeFrameUnit.Hour), limit=1)[0].c
 
     def clear_account_orders(self):
         orders = self.api.list_orders(status='open')
@@ -76,6 +74,7 @@ class BaseAlgorithm:
 
     def place_notional_order(self, symbol: str, price: float):
         return self.api.submit_order(
+
             symbol=symbol,
             notional=price,
             side='buy',
