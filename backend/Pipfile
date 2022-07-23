@@ -13,6 +13,7 @@ numpy = "*"
 sqlmodel = "*"
 newsapi-python = "*"
 bs4 = "*"
+fastapi = {extras = ["all"], version = "*"}
 
 [dev-packages]
 pytest = "*"
