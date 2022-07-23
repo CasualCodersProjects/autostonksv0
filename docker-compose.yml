@@ -24,8 +24,3 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: autostonks
   
-  bot:
-    build: 
-      context: ./backend
-      dockerfile: ./Dockerfile.bot
-    

@@ -1,8 +1,17 @@
 # AutoStonks
 
+**This needs updated.**
+
+# Rewrite Plans
+
+1) When a user invokes the API, it will add the new algorithm to the database with its budget and spawn a new thread.
+2) This new algorithm will run until its expiration time or indefinitely.
+3) To kill the algorithm, set the expiration time in the database.
+4) The frontend can spawn new algorithms, kill existing ones, view graphs about stock performance, and buy and sell stocks that are not locked to an algorithm.
+
 ## Getting started.
 
-Requires [Python 3.8 or newer](https://www.python.org/downloads/) to be installed.
+Requires [Python 3.10 or newer](https://www.python.org/downloads/) to be installed.
 
 Dependency management is done via [Pipenv](https://pipenv.pypa.io/en/latest/). This can be installed via Pip.
 

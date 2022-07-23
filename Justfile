@@ -31,15 +31,6 @@ run-api:
 stop-api:
     docker stop autostonks-api
 
-build-bot:
-    docker build backend -f backend/Dockerfile.bot -t autostonks-bot:latest
-
-run-bot:
-    docker run --rm -d --name autostonks-bot --env-file=.env autostonks-bot:latest
-
-stop-bot:
-    docker stop autostonks-bot
-
 run-database:
     docker run --rm --name autostonks-database -p 5432:5432 -e POSTGRES_DB=autostonks -e POSTGRES_PASSWORD=password -d postgres
 
