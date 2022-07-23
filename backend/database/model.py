@@ -1,7 +1,16 @@
+from datetime import datetime
 from typing import Optional
 
 import arrow
 from sqlmodel import Field, SQLModel, create_engine, Session, select
+
+
+class Instance(SQLModel, table=True):
+    id: int = Field(primary_key=True)
+    created_at: datetime = Field(default=datetime.now)
+    expiration: datetime
+    budget: float
+    balance: float
 
 
 class Holding(SQLModel, table=True):
@@ -9,10 +18,17 @@ class Holding(SQLModel, table=True):
     ticker: str
     shares: float
     buy_price: float
-    buy_date: Optional[str] = Field(default=arrow.now().isoformat())
+    created_at: datetime
+    owner: int = Field(foreign_key='instance.id')
 
     def get_date(self) -> arrow.Arrow:
         return arrow.get(self.buy_date)
+
+
+class Mods(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created_at: datetime = Field(default=datetime.now)
+    user: str = Field(foreign_key='users.id')
 
 
 if __name__ == "__main__":
