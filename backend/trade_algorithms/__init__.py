@@ -65,6 +65,17 @@ class BaseAlgorithm:
     def kill(self):
         self.kill_queue.put(True)
 
+    def run(self):
+        '''
+        Example run method.
+        '''
+        while True:
+            if not self.kill_queue.empty():
+                print('Killing thread')
+                break
+            time.sleep(1)
+            print("Running....")
+
     def _update_instance(self):
         '''
         Update the instance in the database.
@@ -194,6 +205,15 @@ class BaseAlgorithm:
     def place_buy_order(self, symbol: str, qty: float | int, crypto: bool = False):
         if crypto:
             symbol += 'USD'
+
+        # get the current price of the symbol
+        price = self.get_current_price(symbol)
+        buy_price = price * qty
+        # check to make sure we have enough money.
+        if self.instance.balance - buy_price < 0:
+            # should there be an error here?
+            return None  # not enough money to buy
+
         order = self.api.submit_order(
             symbol=symbol,
             qty=float(qty),
@@ -207,6 +227,12 @@ class BaseAlgorithm:
     def place_sell_order(self, symbol: str, qty: float | int, crypto: bool = False):
         if crypto:
             symbol += 'USD'
+
+        # check to make sure we have the shares.
+        if self.get_number_of_shares(symbol) < qty:
+            # should there be an error here?
+            return None
+
         order = self.api.submit_order(
             symbol=symbol,
             qty=float(qty),
@@ -275,11 +301,3 @@ class BaseAlgorithm:
     #         type='market',
     #         time_in_force='day'
     #     )
-
-    def run(self):
-        while True:
-            if not self.kill_queue.empty():
-                print('Killing thread')
-                break
-            time.sleep(1)
-            print("Running....")
