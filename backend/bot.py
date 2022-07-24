@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 from alpaca_trade_api.rest import TimeFrame
 
 from ark_wrapper import Ark
-from trade_algos import BaseAlgorithm
-from trade_algos.copycat import CopyCatAlgorithm
-from trade_algos.simple import SimpleAlgorithm
-from trade_algos.mean_reversion import MeanReversionAlgorithm
+from trade_algos_old import BaseAlgorithm
+from trade_algos_old.copycat import CopyCatAlgorithm
+from trade_algos_old.simple import SimpleAlgorithm
+from trade_algos_old.mean_reversion import MeanReversionAlgorithm
 from utils import get_all_ark_holdings
 
 load_dotenv()

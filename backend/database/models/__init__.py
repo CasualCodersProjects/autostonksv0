@@ -6,9 +6,9 @@ from sqlmodel import Field, SQLModel, create_engine, Session, select
 
 
 class Instance(SQLModel, table=True):
-    id: int = Field(primary_key=True)
-    created_at: datetime = Field(default=datetime.now)
-    expiration: datetime
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created_at: datetime = Field(default=datetime.now())
+    expiration: Optional[datetime] = Field(default=None)
     budget: float
     balance: float
 
@@ -18,11 +18,11 @@ class Holding(SQLModel, table=True):
     ticker: str
     shares: float
     buy_price: float
-    created_at: datetime
+    created_at: datetime = Field(default=datetime.now())
     owner: int = Field(foreign_key='instance.id')
 
     def get_date(self) -> arrow.Arrow:
-        return arrow.get(self.buy_date)
+        return arrow.get(self.created_at)
 
 
 class Mods(SQLModel, table=True):
