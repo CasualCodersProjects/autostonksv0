@@ -5,10 +5,12 @@ import arrow
 from sqlmodel import Field, SQLModel, create_engine, Session, select
 
 
+# move these into their own files eventually
 class Instance(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default=datetime.now())
     expiration: Optional[datetime] = Field(default=None)
+    tickers: Optional[str] = Field(default=None)
     budget: float
     balance: float
 

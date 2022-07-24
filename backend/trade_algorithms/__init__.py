@@ -5,7 +5,8 @@ import time
 
 import arrow
 from alpaca_trade_api.rest import REST, TimeFrame, TimeFrameUnit
-from sqlmodel import Session, select
+from sqlmodel import Session, select, create_engine
+from sqlalchemy.engine import Engine
 
 from database.models import Instance, Holding
 
@@ -19,30 +20,42 @@ class BaseAlgorithm:
     This also contains the needed code to resume the algorithm if the program is interrupted. The database should be queried to find the algorithm to be matched with the instance.
     '''
 
-    def __init__(self, API_KEY: str | None = None, API_SECRET: str | None = None, base_url: str = 'https://paper-api.alpaca.markets', api_version: str = 'v2', expiration: arrow.Arrow | None = None, budget=0.0, session: Session | None = None, database_uri: str | None = None, instance: Instance | None = None):
+    def __init__(self, API_KEY: str | None = None, API_SECRET: str | None = None, base_url: str = 'https://paper-api.alpaca.markets', api_version: str = 'v2', expiration: arrow.Arrow | None = None, budget=0.0, engine: Engine | None = None, database_uri: str | None = None, instance: Instance | None = None):
 
-        if session is None and database_uri is None:
-            raise ValueError('Either session or database_uri must be provided')
+        # if the engine and the database_uri is not provided, error
+        if engine is None and database_uri is None:
+            raise ValueError('Either engine or database_uri must be provided')
 
+        # api key stuffs
         if API_KEY is None:
             API_KEY = os.getenv('ALPACA_API_KEY')
+            if API_KEY is None:
+                raise ValueError('API_KEY must be provided')
         if API_SECRET is None:
             API_SECRET = os.getenv('ALPACA_API_SECRET')
+            if API_SECRET is None:
+                raise ValueError('API_SECRET must be provided')
 
+        # alpaca api
         self.api = REST(API_KEY, API_SECRET, base_url=base_url,
                         api_version=api_version)
 
+        # Database stuff
+        # create or use an existing engine
+        if engine is None:
+            engine = create_engine(database_uri)
+            self.session = Session(engine)
+        else:
+            self.session = Session(engine)
+
+        # create or use an existing instance
         if instance:
             self.instance = instance
         else:
             self.instance = Instance(
                 expiration=expiration, budget=budget, balance=0)
 
-        if session is None:
-            self.session = Session(database_uri)
-        else:
-            self.session = session
-
+        # if the instance is new, add it to the database
         if not instance:
             self.session.add(self.instance)
             self.session.commit()
@@ -63,11 +76,14 @@ class BaseAlgorithm:
         return self
 
     def kill(self):
+        '''
+        Kills the algorithm.
+        '''
         self.kill_queue.put(True)
 
     def run(self):
         '''
-        Example run method.
+        Example run method. This should be overridden by algorithms inheriting from this class.
         '''
         while True:
             if not self.kill_queue.empty():
@@ -77,15 +93,24 @@ class BaseAlgorithm:
             print("Running....")
 
     def _update_instance(self):
+        '''read the matching instance from the database'''
+        statement = select(Instance).where(Instance.id == self.instance.id)
+        results = self.session.exec(statement).first()
+        if results:
+            self.instance = results
+        else:
+            self._commit_instance()
+
+    def _commit_instance(self):
         '''
-        Update the instance in the database.
+        Update the instance in the database. Internal only.
         '''
         self.session.add(self.instance)
         self.session.commit()
 
     def _process_order(self, order):
         '''
-        Takes the order, gets the ID, waits until the order is filled, then subtracts the average buy price from the bot balance.
+        Takes the order, gets the ID, waits until the order is filled, then subtracts the average buy price from the bot balance. Internal only.
         '''
         order_id = order.id
 
@@ -107,7 +132,7 @@ class BaseAlgorithm:
                 owner=self.instance.id)
             self.session.add(holding)
             # there's a commit in this function, so we don't need to commit here
-            self._update_instance()
+            self._commit_instance()
 
         thread = Thread(target=_wait_for_order)
         thread.start()
@@ -119,22 +144,27 @@ class BaseAlgorithm:
         return self.session
 
     def get_number_of_shares(self, symbol: str):
+        '''
+        Gets the number of shares of a particular symbol that the algorithm has.
+        '''
         statement = select(Holding).where(Holding.ticker == symbol)
         results = self.session.exec(statement)
         return sum([holding.shares for holding in results])
 
     def get_holdings(self):
+        '''
+        Gets the current holdings of the algorithm.
+        '''
         statement = select(Holding).where(
             Holding.owner == self.instance.id)
         results = self.session.exec(statement)
         return results
 
     def get_portfolio(self):
+        '''
+        Alias for get_holdings.
+        '''
         return self.get_holdings()
-
-    def add_holding(self, holding: Holding):
-        self.session.add(holding)
-        self.session.commit()
 
     def get_holdings_by_ticker(self, ticker: str):
         statement = select(Holding).where(

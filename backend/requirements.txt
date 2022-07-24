@@ -1,5 +1,0 @@
-fire
-requests
-alpaca-trade-api
-arrow
-python-dotenv

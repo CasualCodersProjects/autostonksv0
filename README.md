@@ -52,3 +52,7 @@ python stonks.py -h
 ```
 
 This will print out help information.
+
+## Known issue.
+
+* We use floats heavily. We should switch to a fractional type with a fixed point that's compatible with most SQL databases.

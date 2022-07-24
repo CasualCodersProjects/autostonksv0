@@ -9,7 +9,7 @@ services:
   api:
     build:
       context: ./backend
-      dockerfile: ./Dockerfile.api
+      dockerfile: ./Dockerfile
     ports:
       - "8080:8080"
   
