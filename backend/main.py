@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from sqlmodel import create_engine, Session, select
+from sqlmodel import create_engine, Session, select, SQLModel
 from fastapi import FastAPI
 
 from database.models import Instance, Holding
@@ -16,6 +16,9 @@ app = FastAPI()
 
 DB_URI = os.getenv("DB_URI", "sqlite:///test.db")
 engine = create_engine(DB_URI)
+
+if DB_URI == "sqlite:///test.db":
+    SQLModel.metadata.create_all(engine)
 
 
 @app.get("/")
@@ -38,6 +41,7 @@ async def new_instance(instance: NewInstance):
         expiration=instance.expiration,
         tickers=instance.tickers,
         budget=instance.budget,
+        engine=engine,
     ).start()
 
     return algo.instance

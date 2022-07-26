@@ -23,13 +23,16 @@ stop-frontend:
     docker stop autostonks-frontend
 
 build-api:
-    docker build backend -f backend/Dockerfile.api -t autostonks-api:latest
+    docker build backend -f backend/Dockerfile -t autostonks-api:latest
 
 run-api:
-    docker run --rm -d -p 8080:8080 --name autostonks-api autostonks-api:latest
+    docker run --rm -p 8080:8080 --name autostonks-api autostonks-api:latest
 
 stop-api:
     docker stop autostonks-api
+
+api:
+    uvicorn main:app --host 0.0.0. --port 8080
 
 run-database:
     docker run --rm --name autostonks-database -p 5432:5432 -e POSTGRES_DB=autostonks -e POSTGRES_PASSWORD=password -d postgres

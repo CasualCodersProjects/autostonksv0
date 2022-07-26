@@ -20,7 +20,9 @@ class BaseAlgorithm:
     This also contains the needed code to resume the algorithm if the program is interrupted. The database should be queried to find the algorithm to be matched with the instance.
     '''
 
-    def __init__(self, API_KEY: str | None = None, API_SECRET: str | None = None, base_url: str = 'https://paper-api.alpaca.markets', api_version: str = 'v2', expiration: arrow.Arrow | None = None, budget=0.0, engine: Engine | None = None, database_uri: str | None = None, instance: Instance | None = None):
+    def __init__(self, API_KEY: str | None = None, API_SECRET: str | None = None, tickers: list[str] = [], base_url: str = 'https://paper-api.alpaca.markets', api_version: str = 'v2', expiration: arrow.Arrow | None = None, budget=0.0, engine: Engine | None = None, database_uri: str | None = None, instance: Instance | None = None):
+
+        self.tickers = tickers
 
         # if the engine and the database_uri is not provided, error
         if engine is None and database_uri is None:

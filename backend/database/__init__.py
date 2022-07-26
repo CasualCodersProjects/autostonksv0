@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 
-from database.model import Holding
+from database.models import Holding
 
 
 def get_all_holdings(session: Session, tickers: list[str] = []) -> list[Holding]:

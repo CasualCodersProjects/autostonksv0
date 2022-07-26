@@ -164,3 +164,4 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
 mean_reversion.json
 tickers.txt
+*.db

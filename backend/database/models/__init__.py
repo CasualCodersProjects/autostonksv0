@@ -27,10 +27,10 @@ class Holding(SQLModel, table=True):
         return arrow.get(self.created_at)
 
 
-class Mods(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    created_at: datetime = Field(default=datetime.now)
-    user: str = Field(foreign_key='users.id')
+# class Mods(SQLModel, table=True):
+#     id: Optional[int] = Field(default=None, primary_key=True)
+#     created_at: datetime = Field(default=datetime.now)
+#     user: str = Field(foreign_key='users.id')
 
 
 if __name__ == "__main__":
