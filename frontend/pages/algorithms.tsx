@@ -6,7 +6,7 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Dashboard | Autostonks</title>
+        <title>Algorithm Manager | Autostonks</title>
       </Head>
     </div>
   );

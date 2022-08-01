@@ -9,6 +9,8 @@
 3) To kill the algorithm, set the expiration time in the database.
 4) The frontend can spawn new algorithms, kill existing ones, view graphs about stock performance, and buy and sell stocks that are not locked to an algorithm.
 
+Logo from [here](https://commons.wikimedia.org/wiki/File:Stonks_emoji.svg).
+
 ## Getting started.
 
 Requires [Python 3.10 or newer](https://www.python.org/downloads/) to be installed.
